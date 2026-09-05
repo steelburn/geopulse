@@ -54,6 +54,7 @@ import AuthenticationSettingsTab from '@/components/admin/settings/tabs/Authenti
 import GeocodingSettingsTab from '@/components/admin/settings/tabs/GeocodingSettingsTab.vue'
 import WeatherSettingsTab from '@/components/admin/settings/tabs/WeatherSettingsTab.vue'
 import MapMatchingSettingsTab from '@/components/admin/settings/tabs/MapMatchingSettingsTab.vue'
+import PanoramaxSettingsTab from '@/components/admin/settings/tabs/PanoramaxSettingsTab.vue'
 import AISettingsTab from '@/components/admin/settings/tabs/AISettingsTab.vue'
 import GPSProcessingSettingsTab from '@/components/admin/settings/tabs/GPSProcessingSettingsTab.vue'
 import ImportSettingsTab from '@/components/admin/settings/tabs/ImportSettingsTab.vue'
@@ -104,6 +105,11 @@ const tabItems = ref([
     key: 'map-matching'
   },
   {
+    label: 'Panoramax',
+    icon: 'pi pi-images',
+    key: 'panoramax'
+  },
+  {
     label: 'AI Assistant',
     icon: 'pi pi-sparkles',
     key: 'ai'
@@ -149,7 +155,7 @@ const normalizeTabKey = (tabKey) => {
   return legacyTabAliases[tabKey] || tabKey
 }
 
-const validTabs = ['authentication', 'geocoding', 'weather', 'map-matching', 'ai', 'gps', 'import', 'export', 'backup', 'notifications', 'system']
+const validTabs = ['authentication', 'geocoding', 'weather', 'map-matching', 'panoramax', 'ai', 'gps', 'import', 'export', 'backup', 'notifications', 'system']
 
 const activeTabIndex = computed(() => {
   return tabItems.value.findIndex(tab => tab.key === activeTab.value)
@@ -161,6 +167,7 @@ const currentTabComponent = computed(() => {
     geocoding: GeocodingSettingsTab,
     weather: WeatherSettingsTab,
     'map-matching': MapMatchingSettingsTab,
+    panoramax: PanoramaxSettingsTab,
     ai: AISettingsTab,
     gps: GPSProcessingSettingsTab,
     import: ImportSettingsTab,

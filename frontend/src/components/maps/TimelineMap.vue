@@ -49,6 +49,9 @@
             :show-weather="showWeather"
             :show-weather-button="!props.isPublicView && weatherSamples.length > 0"
             :weather-loading="timelineStore.weatherLoading"
+            :show-panoramax-control="panoramaxControlAvailable"
+            :panoramax-enabled="showPanoramax"
+            :panoramax-supported="isVectorMapMode"
             :zoom-control-title="zoomControlTitle"
             :zoom-control-icon="zoomControlIcon"
             @toggle-favorites="toggleFavorites"
@@ -59,6 +62,7 @@
             @toggle-immich="toggleImmich"
             @toggle-notes="toggleNotes"
             @toggle-weather="toggleWeather"
+            @toggle-panoramax="togglePanoramax"
             @toggle-heatmap="handleToggleHeatmap"
             @heatmap-layer-change="handleHeatmapLayerChange"
             @zoom-to-data="handleZoomToData"
@@ -198,6 +202,14 @@
           :highlighted-item="activeTimelineHighlight"
         />
 
+        <VectorPanoramaxLayer
+          v-if="map && isReady && panoramaxControlAvailable && isVectorMapMode"
+          :map="map"
+          :visible="showPanoramax"
+          :endpoint="props.panoramaxEndpoint"
+          @select="openPanoramaxViewer"
+        />
+
         <!-- Current Location Layer -->
         <CurrentLocationLayer
           v-if="map && isReady && showCurrentLocation && currentLocation"
@@ -281,6 +293,14 @@
           :type="timelineRegenerationType"
           :job-id="currentJobId"
           :job-progress="jobProgress"
+        />
+        <PanoramaxViewerDialog
+          v-if="panoramaxControlAvailable"
+          v-model:visible="panoramaxViewerVisible"
+          :endpoint="props.panoramaxEndpoint"
+          :sequence-id="panoramaxSelection.sequenceId"
+          :picture-id="panoramaxSelection.pictureId"
+          :details="panoramaxSelection.details"
         />
 
       </template>
@@ -372,6 +392,8 @@ import { showDemoModeToast } from '@/utils/demoMode'
 
 // Map components
 import {FavoritesLayer, HeatmapLayer, MapContainer, MapControls, PathLayer, TimelineLayer, CurrentLocationLayer, ImmichLayer, NotesLayer, TripPlanLayer, RawGpsPointsLayer, WeatherLayer} from '@/components/maps'
+import VectorPanoramaxLayer from '@/maps/vector/layers/VectorPanoramaxLayer.vue'
+import PanoramaxViewerDialog from '@/components/maps/dialogs/PanoramaxViewerDialog.vue'
 import TripReplayControls from '@/components/maps/TripReplayControls.vue'
 import ViewerLocationControl from '@/components/maps/ViewerLocationControl.vue'
 import ViewerLocationMarker from '@/components/maps/ViewerLocationMarker.vue'
@@ -531,6 +553,14 @@ const props = defineProps({
   autoShowTripReplayControls: {
     type: Boolean,
     default: true
+  },
+  panoramaxAvailable: {
+    type: Boolean,
+    default: false
+  },
+  panoramaxEndpoint: {
+    type: String,
+    default: ''
   }
 })
 
@@ -567,13 +597,15 @@ const {
   showImmich,
   showNotes: showNotesLayer,
   showWeather,
+  showPanoramax,
   toggleFavorites,
   toggleTimeline,
   togglePath,
   toggleRawGpsPoints,
   toggleImmich,
   toggleNotes,
-  toggleWeather
+  toggleWeather,
+  togglePanoramax
 } = useMapLayers()
 
 const {
@@ -636,6 +668,8 @@ const toast = useToast()
 
 // Local state
 const map = shallowRef(null)
+const panoramaxViewerVisible = ref(false)
+const panoramaxSelection = ref({ sequenceId: null, pictureId: null, details: '' })
 const featureContextMenuActive = ref(false)
 const heatmapEnabled = ref(false)
 const heatmapLayer = ref('stays')
@@ -907,6 +941,19 @@ const heatmapGradient = {
 
 const mapEngineMode = computed(() => resolveMapEngineModeFromInstance(map.value, MAP_RENDER_MODES.RASTER))
 const isVectorMapMode = computed(() => mapEngineMode.value === MAP_RENDER_MODES.VECTOR)
+const panoramaxControlAvailable = computed(() => !props.isPublicView && props.panoramaxAvailable && Boolean(props.panoramaxEndpoint))
+
+const openPanoramaxViewer = (selection) => {
+  panoramaxSelection.value = {
+    sequenceId: selection?.sequenceId || null,
+    pictureId: selection?.pictureId || null,
+    details: [
+      selection?.captureTime ? `Captured ${new Date(selection.captureTime).toLocaleString()}` : '',
+      Number.isFinite(Number(selection?.heading)) ? `Heading ${Math.round(Number(selection.heading))}°` : ''
+    ].filter(Boolean).join(' · ')
+  }
+  panoramaxViewerVisible.value = true
+}
 const showHighlightedTripPopup = computed(() => !isMobileTripSelectionViewport.value)
 const activeHighlightedTrip = computed(() => {
   if (!activeTimelineHighlight.value || activeTimelineHighlight.value.type !== 'trip') {

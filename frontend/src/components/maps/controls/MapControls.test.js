@@ -18,6 +18,20 @@ const mountControls = (props = {}) => shallowMount(MapControls, {
 const moreItems = (wrapper) => wrapper.findComponent({ name: 'Menu' }).props('model')
 
 describe('MapControls mobile More menu', () => {
+  it('toggles Panoramax when MapLibre support is available', async () => {
+    const wrapper = mountControls({ showPanoramaxControl: true, panoramaxSupported: true })
+
+    await wrapper.find('[title="Show Panoramax coverage"]').trigger('click')
+
+    expect(wrapper.emitted('toggle-panoramax')).toEqual([[true]])
+  })
+
+  it('keeps Panoramax disabled in raster mode', () => {
+    const wrapper = mountControls({ showPanoramaxControl: true, panoramaxSupported: false })
+
+    expect(wrapper.find('[title="Panoramax coverage requires MapLibre vector maps"]').attributes('disabled')).toBeDefined()
+  })
+
   it('highlights More when a hidden control is active', () => {
     const wrapper = mountControls({ showHeatmap: true, heatmapEnabled: true })
 

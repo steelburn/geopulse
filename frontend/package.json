@@ -14,6 +14,7 @@
     "@primeuix/themes": "latest",
     "@primevue/auto-import-resolver": "4.3.4",
     "@primevue/forms": "4.3.4",
+    "@panoramax/web-viewer": "5.2.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "autoprefixer": "^10",
     "axios": "^1.9.0",

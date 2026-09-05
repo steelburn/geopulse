@@ -58,6 +58,8 @@
               :custom-tile-url="customMapTileUrl"
               :custom-style-url="customMapStyleUrl"
               :map-render-mode="mapRenderMode"
+              :panoramax-available="panoramaxAvailable"
+              :panoramax-endpoint="panoramaxEndpoint"
               :enable-trip-replay="true"
               :auto-show-trip-replay-controls="autoShowTripReplayControls"
               :read-only="demoReadOnly"
@@ -257,7 +259,9 @@ const readTimelineDisplayFallback = () => {
       ?? true,
     mapMatchingEnabled: mapMatchingAvailable === false
       ? false
-      : (user.mapMatchingEnabled ?? cachedProfile.mapMatchingEnabled ?? false)
+      : (user.mapMatchingEnabled ?? cachedProfile.mapMatchingEnabled ?? false),
+    panoramaxAvailable: false,
+    panoramaxEndpoint: null
   }
 }
 
@@ -279,6 +283,8 @@ const customMapStyleUrl = ref(initialTimelineDisplaySettings.customMapStyleUrl)
 const mapRenderMode = ref(initialTimelineDisplaySettings.mapRenderMode)
 const autoShowTripReplayControls = ref(initialTimelineDisplaySettings.autoShowTripReplayControls)
 const mapMatchingEnabled = ref(initialTimelineDisplaySettings.mapMatchingEnabled)
+const panoramaxAvailable = ref(initialTimelineDisplaySettings.panoramaxAvailable)
+const panoramaxEndpoint = ref(initialTimelineDisplaySettings.panoramaxEndpoint)
 const isFetching = ref(false) // Flag to prevent concurrent fetches
 const pendingFetchKey = ref(null) // Track the currently pending fetch
 const queuedFetchRange = ref(null) // Keep latest requested range while a fetch is running
@@ -774,6 +780,8 @@ const loadTimelineDisplaySettings = async () => {
     mapRenderMode.value = normalizeTimelineMapRenderMode(data?.mapRenderMode || fallback.mapRenderMode)
     autoShowTripReplayControls.value = data?.autoShowTripReplayControls ?? fallback.autoShowTripReplayControls
     mapMatchingEnabled.value = data?.mapMatchingEnabled ?? fallback.mapMatchingEnabled
+    panoramaxAvailable.value = data?.panoramaxAvailable ?? false
+    panoramaxEndpoint.value = data?.panoramaxEndpoint || null
   } catch (error) {
     showCurrentLocationTelemetry.value = fallback.showCurrentLocationTelemetry
     customMapTileUrl.value = fallback.customMapTileUrl
@@ -781,6 +789,8 @@ const loadTimelineDisplaySettings = async () => {
     mapRenderMode.value = fallback.mapRenderMode
     autoShowTripReplayControls.value = fallback.autoShowTripReplayControls
     mapMatchingEnabled.value = fallback.mapMatchingEnabled
+    panoramaxAvailable.value = false
+    panoramaxEndpoint.value = null
   } finally {
     mapPreferencesLoaded.value = true
   }

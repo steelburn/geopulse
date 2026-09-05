@@ -203,6 +203,20 @@ const timelineDisplayPrefs = {
 }
 
 describe('profile tab dirty state', () => {
+  it('does not expose or persist a Panoramax display preference', async () => {
+    const wrapper = mount(TimelineDisplayTab, {
+      props: {
+        initialPreferences: { ...timelineDisplayPrefs, panoramaxEnabled: true }
+      },
+      global: globalOptions
+    })
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('Panoramax')
+    await wrapper.find('form').trigger('submit')
+    expect(wrapper.emitted('save')[0][0]).not.toHaveProperty('panoramaxEnabled')
+  })
+
   it('emits dirty changes from the profile tab and clears after reset', async () => {
     const wrapper = mount(ProfileTab, {
       props: {

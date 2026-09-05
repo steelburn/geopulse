@@ -908,6 +908,7 @@ public class UserService {
         }
 
         boolean mapMatchingAvailable = isMapMatchingAvailable();
+        boolean panoramaxAvailable = isPanoramaxAvailable();
 
         return TimelineDisplayPreferences.builder()
                 .customMapTileUrl(user.getCustomMapTileUrl())
@@ -928,7 +929,14 @@ public class UserService {
                         ? user.getTimelineDisplayAutoShowTripReplayControls() : true)
                 .mapMatchingEnabled(isTimelineDisplayMapMatchingEnabled(user, mapMatchingAvailable))
                 .mapMatchingAvailable(mapMatchingAvailable)
+                .panoramaxAvailable(panoramaxAvailable)
+                .panoramaxEndpoint(panoramaxAvailable ? systemSettingsService.getString("panoramax.endpoint").trim() : null)
                 .build();
+    }
+
+    public boolean isPanoramaxAvailable() {
+        return systemSettingsService.getBoolean("panoramax.enabled")
+                && !systemSettingsService.getString("panoramax.endpoint").trim().isEmpty();
     }
 
     public boolean isMapMatchingAvailable() {

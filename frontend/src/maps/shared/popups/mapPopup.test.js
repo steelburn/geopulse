@@ -10,6 +10,7 @@ import { buildTimelineStackItems } from '../timelineStackContent'
 import {
   buildFriendTimelineTripPopupModel,
   buildHighlightedTripPopupModel,
+  buildPanoramaxCoveragePopupModel,
   buildTimelineItemPopupModel,
   buildTripEndpointPopupModel
 } from './timelinePopupModels'
@@ -64,6 +65,21 @@ describe('map popup mounting', () => {
 })
 
 describe('map popup models', () => {
+  it('builds Panoramax coverage rows', () => {
+    expect(buildPanoramaxCoveragePopupModel({
+      nb_pictures: 4,
+      nb_360_pictures: 0,
+      nb_flat_pictures: 4
+    })).toMatchObject({
+      title: 'Panoramax coverage',
+      description: 'Zooming in for details…',
+      rows: [
+        { label: 'Photos', value: '4' },
+        { label: 'Flat photos', value: '4' }
+      ]
+    })
+  })
+
   it('builds weather rows with optional precipitation', () => {
     const model = buildWeatherPopupModel({
       weatherCode: 61,

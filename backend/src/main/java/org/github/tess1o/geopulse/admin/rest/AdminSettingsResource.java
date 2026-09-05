@@ -1,5 +1,7 @@
 package org.github.tess1o.geopulse.admin.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.http.HttpServerRequest;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -58,6 +60,9 @@ public class AdminSettingsResource {
 
     @Inject
     SystemSettingsService settingsService;
+
+    @Inject
+    ObjectMapper objectMapper;
 
     @Inject
     AuditLogService auditLogService;
@@ -311,6 +316,45 @@ public class AdminSettingsResource {
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity(responsePayload)
                 .build();
+    }
+
+    @POST
+    @Path("/panoramax/test")
+    @RolesAllowed(SecurityRoles.ADMIN)
+    public Response testPanoramaxConnection() {
+        String endpoint = settingsService.getString("panoramax.endpoint").trim();
+        try {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(endpoint))
+                    .timeout(Duration.ofSeconds(10))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            boolean hasVectorTiles = response.statusCode() >= 200 && response.statusCode() < 300
+                    && hasVectorTiles(objectMapper.readTree(response.body()));
+            Map<String, Object> payload = Map.of(
+                    "success", hasVectorTiles,
+                    "endpoint", endpoint,
+                    "message", hasVectorTiles ? "Panoramax STAC vector tiles found" : "No Panoramax vector-tile link found");
+            return Response.status(hasVectorTiles ? Response.Status.OK : Response.Status.BAD_REQUEST).entity(payload).build();
+        } catch (Exception exception) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of(
+                    "success", false,
+                    "endpoint", endpoint,
+                    "message", "Could not reach Panoramax endpoint: " + exception.getMessage())).build();
+        }
+    }
+
+    static boolean hasVectorTiles(JsonNode catalog) {
+        JsonNode links = catalog.path("links");
+        if (!links.isArray()) {
+            return false;
+        }
+        for (JsonNode link : links) {
+            if ("xyz".equals(link.path("rel").asText())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @POST

@@ -42,7 +42,7 @@ trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM
 
 echo "Starting backend (Quarkus dev mode)..."
-./mvnw -pl backend quarkus:dev "-Djvm.args=${JAVA_OPEN_OPTS}" "$@" &
+./mvnw -pl backend clean quarkus:dev "-Djvm.args=${JAVA_OPEN_OPTS}" "$@" &
 MAVEN_PID=$!
 
 wait "$MAVEN_PID"

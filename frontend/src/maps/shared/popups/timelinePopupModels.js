@@ -221,6 +221,24 @@ export const buildTripEndpointPopupModel = (trip, markerType, deps = {}) => {
   }
 }
 
+export const buildPanoramaxCoveragePopupModel = (coverage = {}) => {
+  const total = Number(coverage.nb_pictures) || 0
+  const panoramic = Number(coverage.nb_360_pictures) || 0
+  const flat = Number(coverage.nb_flat_pictures) || 0
+
+  return {
+    title: 'Panoramax coverage',
+    description: 'Zooming in for details…',
+    iconClass: 'pi pi-images',
+    rows: [
+      { label: 'Photos', value: String(total) },
+      panoramic ? { label: '360° photos', value: String(panoramic) } : null,
+      flat ? { label: 'Flat photos', value: String(flat) } : null
+    ].filter(Boolean),
+    variant: 'compact'
+  }
+}
+
 export const buildFriendTimelineStayPopupModel = (userTimeline, stay) => ({
   title: userTimeline?.fullName || 'User',
   subtitle: stay?.locationName || 'Stay',

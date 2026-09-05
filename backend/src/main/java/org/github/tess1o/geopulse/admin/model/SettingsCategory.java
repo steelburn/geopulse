@@ -7,6 +7,7 @@ public enum SettingsCategory {
     AUTH("auth"),
     GEOCODING("geocoding"),
     MAP_MATCHING("map-matching"),
+    PANORAMAX("panoramax"),
     GPS("gps"),
     IMPORT("import"),
     SYSTEM("system");

@@ -103,7 +103,13 @@ export default defineConfig({
     },
     base: "/",
     plugins: [
-        vue(),
+        vue({
+            template: {
+                compilerOptions: {
+                    isCustomElement: tag => tag.startsWith('pnx-')
+                }
+            }
+        }),
         devServiceWorkerCleanupPlugin(),
         Components({
             resolvers: [
@@ -166,7 +172,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            '@panoramax/web-viewer-photoviewer': fileURLToPath(new URL('./node_modules/@panoramax/web-viewer/build/cjs/index_photoviewer.js', import.meta.url))
         }
     },
     server: {

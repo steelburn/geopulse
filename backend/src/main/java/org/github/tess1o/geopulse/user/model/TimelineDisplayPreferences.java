@@ -93,4 +93,10 @@ public class TimelineDisplayPreferences {
      * Whether map matching is enabled globally and configured by an administrator.
      */
     private Boolean mapMatchingAvailable;
+
+    /** Whether an administrator enabled a public Panoramax endpoint. */
+    private Boolean panoramaxAvailable;
+
+    /** Read-only public STAC endpoint used by the browser layer and viewer. */
+    private String panoramaxEndpoint;
 }

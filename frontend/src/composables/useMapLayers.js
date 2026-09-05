@@ -14,6 +14,7 @@ export function useMapLayers() {
   const showImmich = ref(false)
   const showNotes = ref(false)
   const showWeather = ref(false)
+  const showPanoramax = ref(false)
 
   // Layer control methods
   const toggleFriends = (value) => {
@@ -60,6 +61,10 @@ export function useMapLayers() {
     showWeather.value = value !== undefined ? value : !showWeather.value
   }
 
+  const togglePanoramax = (value) => {
+    showPanoramax.value = value !== undefined ? value : !showPanoramax.value
+  }
+
   // Convenience methods
   const showAllLayers = () => {
     showFriends.value = true
@@ -70,6 +75,7 @@ export function useMapLayers() {
     showImmich.value = true
     showNotes.value = true
     showWeather.value = true
+    showPanoramax.value = true
   }
 
   const hideAllLayers = () => {
@@ -81,6 +87,7 @@ export function useMapLayers() {
     showImmich.value = false
     showNotes.value = false
     showWeather.value = false
+    showPanoramax.value = false
   }
 
   const resetToDefaults = () => {
@@ -92,11 +99,12 @@ export function useMapLayers() {
     showImmich.value = false
     showNotes.value = false
     showWeather.value = false
+    showPanoramax.value = false
   }
 
   // Computed
   const visibleLayerCount = computed(() => {
-    return [showFriends.value, showFavorites.value, showTimeline.value, showPath.value, showRawGpsPoints.value, showImmich.value, showNotes.value, showWeather.value]
+    return [showFriends.value, showFavorites.value, showTimeline.value, showPath.value, showRawGpsPoints.value, showImmich.value, showNotes.value, showWeather.value, showPanoramax.value]
       .filter(Boolean).length
   })
 
@@ -159,6 +167,13 @@ export function useMapLayers() {
       visible: showWeather.value,
       toggle: toggleWeather,
       icon: 'pi pi-cloud'
+    },
+    {
+      id: 'panoramax',
+      label: 'Panoramax',
+      visible: showPanoramax.value,
+      toggle: togglePanoramax,
+      icon: 'pi pi-images'
     }
   ])
 
@@ -172,6 +187,7 @@ export function useMapLayers() {
     showImmich: readonly(showImmich),
     showNotes: readonly(showNotes),
     showWeather: readonly(showWeather),
+    showPanoramax: readonly(showPanoramax),
 
     // Methods
     toggleFriends,
@@ -182,6 +198,7 @@ export function useMapLayers() {
     toggleImmich,
     toggleNotes,
     toggleWeather,
+    togglePanoramax,
     showAllLayers,
     hideAllLayers,
     resetToDefaults,

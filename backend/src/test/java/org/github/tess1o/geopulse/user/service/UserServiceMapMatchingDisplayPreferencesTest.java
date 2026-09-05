@@ -131,4 +131,19 @@ class UserServiceMapMatchingDisplayPreferencesTest {
 
         assertTrue(user.getTimelineDisplayMapMatchingEnabled());
     }
+
+    @Test
+    void timelineDisplayPreferencesExposePanoramaxConfiguration() {
+        UUID userId = UUID.randomUUID();
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+        when(userRepository.findById(userId)).thenReturn(user);
+        when(systemSettingsService.getBoolean("panoramax.enabled")).thenReturn(true);
+        when(systemSettingsService.getString("panoramax.endpoint")).thenReturn("https://api.panoramax.xyz/api");
+
+        TimelineDisplayPreferences preferences = userService.getTimelineDisplayPreferences(userId);
+
+        assertTrue(preferences.getPanoramaxAvailable());
+        assertTrue(preferences.getPanoramaxEndpoint().contains("panoramax.xyz"));
+    }
 }

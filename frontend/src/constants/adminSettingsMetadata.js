@@ -354,6 +354,16 @@ export const SETTING_METADATA = {
     description: 'Minimum absolute gap allowance between matched fragments'
   },
 
+  // Panoramax Settings
+  'panoramax.enabled': {
+    label: 'Enable Panoramax Coverage',
+    description: 'Show Panoramax street-level imagery coverage on Timeline maps'
+  },
+  'panoramax.endpoint': {
+    label: 'Panoramax STAC Endpoint',
+    description: 'Public Panoramax STAC API endpoint used for coverage and imagery'
+  },
+
   // Import Settings
   'import.bulk-insert-batch-size': {
     label: 'Bulk Insert Batch Size',

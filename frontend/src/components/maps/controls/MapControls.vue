@@ -145,6 +145,17 @@
       </button>
 
       <button
+        v-if="showPanoramaxControl"
+        @click="handleTogglePanoramax"
+        :class="{ active: panoramaxEnabled }"
+        :title="panoramaxButtonTitle"
+        class="control-button"
+        :disabled="!map || !panoramaxSupported"
+      >
+        <i class="pi pi-images"></i>
+      </button>
+
+      <button
         v-if="hasMoreControls"
         type="button"
         class="control-button more-controls-trigger"
@@ -288,6 +299,18 @@ const props = defineProps({
   weatherLoading: {
     type: Boolean,
     default: false
+  },
+  showPanoramaxControl: {
+    type: Boolean,
+    default: false
+  },
+  panoramaxEnabled: {
+    type: Boolean,
+    default: false
+  },
+  panoramaxSupported: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -300,6 +323,7 @@ const emit = defineEmits([
   'toggle-immich',
   'toggle-notes',
   'toggle-weather',
+  'toggle-panoramax',
   'toggle-heatmap',
   'heatmap-layer-change',
   'zoom-to-data'
@@ -335,6 +359,10 @@ const handleToggleNotes = () => {
 
 const handleToggleWeather = () => {
   emit('toggle-weather', !props.showWeather)
+}
+
+const handleTogglePanoramax = () => {
+  if (props.panoramaxSupported) emit('toggle-panoramax', !props.panoramaxEnabled)
 }
 
 const handleZoomToData = () => {
@@ -417,6 +445,11 @@ const routeDisplayModeIcon = computed(() => {
 const rawGpsPointsButtonTitle = computed(() => {
   if (props.rawGpsPointsLoading) return 'Loading raw GPS points'
   return props.rawGpsPointsEnabled ? 'Hide raw GPS points' : 'Show raw GPS points'
+})
+
+const panoramaxButtonTitle = computed(() => {
+  if (!props.panoramaxSupported) return 'Panoramax coverage requires MapLibre vector maps'
+  return props.panoramaxEnabled ? 'Hide Panoramax coverage' : 'Show Panoramax coverage'
 })
 
 const hasMoreControls = computed(() => (

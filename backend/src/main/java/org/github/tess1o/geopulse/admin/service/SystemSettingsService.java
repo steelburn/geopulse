@@ -233,6 +233,12 @@ public class SystemSettingsService {
         SETTING_DEFINITIONS.put("map-matching.quality.max-short-discontinuity-meters",
                 new SettingDefinition("geopulse.timeline.map-matching.quality.max-short-discontinuity-meters", "100", ValueType.INTEGER, "map-matching", "Minimum absolute unmatched gap allowance between matched fragments"));
 
+        // Panoramax is a public, browser-facing STAC endpoint. Never store credentials here.
+        SETTING_DEFINITIONS.put("panoramax.enabled",
+                new SettingDefinition("geopulse.panoramax.enabled", "true", ValueType.BOOLEAN, "panoramax", "Enable Panoramax coverage on Timeline maps"));
+        SETTING_DEFINITIONS.put("panoramax.endpoint",
+                new SettingDefinition("geopulse.panoramax.endpoint", "https://api.panoramax.xyz/api", ValueType.STRING, "panoramax", "Public Panoramax STAC API endpoint"));
+
         // Import settings
         SETTING_DEFINITIONS.put("import.bulk-insert-batch-size",
                 new SettingDefinition("geopulse.import.bulk-insert-batch-size", "500", ValueType.INTEGER, "import", "Bulk insert batch size"));
@@ -686,7 +692,7 @@ public class SystemSettingsService {
     public Map<String, List<SettingInfo>> getAllSettings() {
         Map<String, List<SettingInfo>> result = new LinkedHashMap<>();
 
-        for (String category : List.of("auth", "geocoding", "weather", "map-matching", "ai", "gps", "import", "export", "system")) {
+        for (String category : List.of("auth", "geocoding", "weather", "map-matching", "panoramax", "ai", "gps", "import", "export", "system")) {
             result.put(category, getSettingsByCategory(category));
         }
 
@@ -767,6 +773,9 @@ public class SystemSettingsService {
             }
         }
         if (key.startsWith("weather.") && (key.endsWith("-url") || key.endsWith(".url"))) {
+            validateOptionalHttpUrl(key, value);
+        }
+        if ("panoramax.endpoint".equals(key)) {
             validateOptionalHttpUrl(key, value);
         }
         if ("weather.primary-provider".equals(key) || "weather.secondary-provider".equals(key)) {
